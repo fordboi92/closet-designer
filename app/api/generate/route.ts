@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ result: `API error: ${response.status} - ${error}` }, { status: 500 });
     }
     const data = await response.json();
-    const result = data.content?.map((b) => b.text || "").join("") || "No response.";
+    const result = data.content?.map((b: {text?: string}) => b.text || "").join("") || "No response.";
     return NextResponse.json({ result });
   } catch (err) {
     return NextResponse.json({ result: `Server error: ${String(err)}` }, { status: 500 });
