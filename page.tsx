@@ -37,19 +37,19 @@ export default function Home() {
   const [spaceType, setSpaceType] = useState("Walk-in closet");
   const [users, setUsers] = useState("1 person");
   const [notes, setNotes] = useState("");
-  const [priorities, setPriorities] = useState<string[]>(["Hanging clothes (long)", "Hanging clothes (short/folded)"]);
+  const [priorities, setPriorities] = useState(["Hanging clothes (long)", "Hanging clothes (short/folded)"]);
   const [style, setStyle] = useState("modern and clean with a minimalist aesthetic");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState("");
   const [copied, setCopied] = useState(false);
 
-  const togglePriority = (val: string) => {
+  function togglePriority(val: string) {
     setPriorities((prev) =>
       prev.includes(val) ? prev.filter((p) => p !== val) : [...prev, val]
     );
-  };
+  }
 
-  const generateDesign = async () => {
+  async function generateDesign() {
     setLoading(true);
     setResult("");
     const sqft = (parseFloat(width) * parseFloat(depth)).toFixed(0);
@@ -60,18 +60,18 @@ Generate a detailed closet design recommendation for the following space:
 
 SPACE DETAILS:
 - Type: ${spaceType}
-- Dimensions: ${width}ft wide × ${depth}ft deep × ${height}ft tall (${sqft} sq ft)
+- Dimensions: ${width}ft wide x ${depth}ft deep x ${height}ft tall (${sqft} sq ft)
 - Users: ${users}
 - Style preference: ${style}
 - Storage priorities: ${priorities.length > 0 ? priorities.join(", ") : "general storage"}
 ${notes ? `- Additional notes: ${notes}` : ""}
 
 Please provide:
-1. LAYOUT OVERVIEW — describe the wall-by-wall layout (left wall, right wall, back wall, center if applicable)
-2. ZONE BREAKDOWN — list each storage zone with dimensions and what goes there
-3. PRODUCT RECOMMENDATIONS — specific types of units (tower units, hang rods, shelf heights, drawer units) with approximate dimensions
-4. DESIGN TIPS — 2-3 tips specific to this space and user
-5. EXPORT SUMMARY — a concise bullet list of all components that could be used to build a product list or import into design software
+1. LAYOUT OVERVIEW - describe the wall-by-wall layout (left wall, right wall, back wall, center if applicable)
+2. ZONE BREAKDOWN - list each storage zone with dimensions and what goes there
+3. PRODUCT RECOMMENDATIONS - specific types of units (tower units, hang rods, shelf heights, drawer units) with approximate dimensions
+4. DESIGN TIPS - 2-3 tips specific to this space and user
+5. EXPORT SUMMARY - a concise bullet list of all components that could be used to build a product list or import into design software
 
 Keep the response practical and specific. Use measurements where possible.`;
 
@@ -87,15 +87,15 @@ Keep the response practical and specific. Use measurements where possible.`;
       setResult("Error generating design. Please check your API key and try again.");
     }
     setLoading(false);
-  };
+  }
 
-  const copyResult = () => {
+  function copyResult() {
     navigator.clipboard.writeText(result);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  };
+  }
 
-  const downloadResult = () => {
+  function downloadResult() {
     const blob = new Blob([result], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -103,7 +103,7 @@ Keep the response practical and specific. Use measurements where possible.`;
     a.download = "closet-design.txt";
     a.click();
     URL.revokeObjectURL(url);
-  };
+  }
 
   return (
     <main style={{ maxWidth: 700, margin: "0 auto", padding: "2rem 1rem", fontFamily: "system-ui, sans-serif" }}>
@@ -112,17 +112,21 @@ Keep the response practical and specific. Use measurements where possible.`;
         <p style={{ color: "#666", margin: 0, fontSize: 15 }}>Enter room details to generate a custom Tailored Closet design</p>
       </div>
 
-      {/* Dimensions */}
       <section style={cardStyle}>
         <p style={sectionTitle}>Room dimensions</p>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 12 }}>
-          {[["Width (ft)", width, setWidth], ["Depth (ft)", depth, setDepth], ["Height (ft)", height, setHeight]].map(([label, val, setter]) => (
-            <div key={label as string}>
-              <label style={labelStyle}>{label as string}</label>
-              <input type="number" value={val as string} onChange={(e) => (setter as (v: string) => void)(e.target.value)}
-                style={inputStyle} min="1" max="40" />
-            </div>
-          ))}
+          <div>
+            <label style={labelStyle}>Width (ft)</label>
+            <input type="number" value={width} onChange={(e) => setWidth(e.target.value)} style={inputStyle} min="1" max="40" />
+          </div>
+          <div>
+            <label style={labelStyle}>Depth (ft)</label>
+            <input type="number" value={depth} onChange={(e) => setDepth(e.target.value)} style={inputStyle} min="1" max="40" />
+          </div>
+          <div>
+            <label style={labelStyle}>Height (ft)</label>
+            <input type="number" value={height} onChange={(e) => setHeight(e.target.value)} style={inputStyle} min="6" max="14" />
+          </div>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           <div>
@@ -142,7 +146,6 @@ Keep the response practical and specific. Use measurements where possible.`;
         </div>
       </section>
 
-      {/* Priorities */}
       <section style={cardStyle}>
         <p style={sectionTitle}>Storage priorities</p>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
@@ -155,7 +158,6 @@ Keep the response practical and specific. Use measurements where possible.`;
         </div>
       </section>
 
-      {/* Style */}
       <section style={cardStyle}>
         <p style={sectionTitle}>Style preference</p>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
@@ -168,12 +170,11 @@ Keep the response practical and specific. Use measurements where possible.`;
         </div>
       </section>
 
-      {/* Notes */}
       <section style={cardStyle}>
         <p style={sectionTitle}>Additional notes (optional)</p>
         <textarea value={notes} onChange={(e) => setNotes(e.target.value)}
           placeholder="e.g. has a window on left wall, client has lots of dresses, needs center island..."
-          rows={3} style={{ ...inputStyle, width: "100%", resize: "vertical", boxSizing: "border-box" }} />
+          rows={3} style={{ ...inputStyle, width: "100%", resize: "vertical", boxSizing: "border-box" as const }} />
       </section>
 
       <button onClick={generateDesign} disabled={loading}
@@ -187,7 +188,7 @@ Keep the response practical and specific. Use measurements where possible.`;
           <p style={sectionTitle}>Design recommendation</p>
           <pre style={{ whiteSpace: "pre-wrap", fontSize: 14, lineHeight: 1.7, margin: "0 0 1rem", color: "#1a1a1a" }}>{result}</pre>
           <div style={{ display: "flex", gap: 8 }}>
-            <button onClick={copyResult} style={actionBtnStyle}>{copied ? "✓ Copied!" : "Copy"}</button>
+            <button onClick={copyResult} style={actionBtnStyle}>{copied ? "Copied!" : "Copy"}</button>
             <button onClick={downloadResult} style={actionBtnStyle}>Download .txt</button>
           </div>
         </section>
@@ -196,10 +197,10 @@ Keep the response practical and specific. Use measurements where possible.`;
   );
 }
 
-const cardStyle: React.CSSProperties = { background: "#fff", border: "1px solid #e5e5e5", borderRadius: 12, padding: "1.25rem", marginBottom: "1rem" };
-const sectionTitle: React.CSSProperties = { fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "#888", margin: "0 0 1rem" };
-const labelStyle: React.CSSProperties = { display: "block", fontSize: 13, color: "#555", marginBottom: 6 };
-const inputStyle: React.CSSProperties = { width: "100%", padding: "8px 10px", fontSize: 14, border: "1px solid #ddd", borderRadius: 8, boxSizing: "border-box", background: "#fafafa" };
-const chipStyle: React.CSSProperties = { padding: "6px 14px", borderRadius: 20, border: "1px solid #ddd", fontSize: 13, cursor: "pointer", background: "#fff", color: "#555" };
-const activeChipStyle: React.CSSProperties = { background: "#EBF4FF", borderColor: "#3B82F6", color: "#1D4ED8" };
-const actionBtnStyle: React.CSSProperties = { padding: "8px 18px", fontSize: 13, border: "1px solid #ddd", borderRadius: 8, background: "#fff", cursor: "pointer" };
+const cardStyle = { background: "#fff", border: "1px solid #e5e5e5", borderRadius: 12, padding: "1.25rem", marginBottom: "1rem" };
+const sectionTitle = { fontSize: 11, fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: "0.06em", color: "#888", margin: "0 0 1rem" };
+const labelStyle = { display: "block", fontSize: 13, color: "#555", marginBottom: 6 };
+const inputStyle = { width: "100%", padding: "8px 10px", fontSize: 14, border: "1px solid #ddd", borderRadius: 8, boxSizing: "border-box" as const, background: "#fafafa" };
+const chipStyle = { padding: "6px 14px", borderRadius: 20, border: "1px solid #ddd", fontSize: 13, cursor: "pointer", background: "#fff", color: "#555" };
+const activeChipStyle = { background: "#EBF4FF", borderColor: "#3B82F6", color: "#1D4ED8" };
+const actionBtnStyle = { padding: "8px 18px", fontSize: 13, border: "1px solid #ddd", borderRadius: 8, background: "#fff", cursor: "pointer" };
