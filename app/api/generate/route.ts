@@ -8,8 +8,7 @@ export async function POST(req: NextRequest) {
     if (!apiKey) {
       return NextResponse.json({ result: "Error: API key not configured." }, { status: 500 });
     }
-
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+f
       method: "POST",
       headers: {
         "Content-Type": "application/json",
