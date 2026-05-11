@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model: ""claude-sonnet-4-5",
+        model: "claude-haiku-4-5",
         max_tokens: 1500,
         messages: [{ role: "user", content: prompt }],
       }),
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await response.json();
-    const result = data.content?.map((b: { text?: string }) => b.text || "").join("") || "No response.";
+    const result = data.content?.map((b) => b.text || "").join("") || "No response.";
     return NextResponse.json({ result });
 
   } catch (err) {
